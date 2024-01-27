@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { string } = require("zod");
+const app = require("express")
 
 mongoose.connect("mongodb://127.0.0.0.1:27017/paytm");
 
@@ -10,8 +11,10 @@ const userSchema = new Schema({
   lastName: String,
 });
 
-const User = mongose.model("user", userSchema);
+const User = mongoose.model("user", userSchema);
 
 module.exports = {
   User,
 };
+
+app.listen((3000, () => console.log("Server started on port 3000")));

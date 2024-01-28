@@ -85,3 +85,7 @@ router.post("/signin", async (req, res) => {
     message: "Error Logging In",
   });
 });
+
+router.get("/bulk", async (req, res) => {
+
+})

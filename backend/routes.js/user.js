@@ -1,7 +1,7 @@
-const express = require("express");
+const jwt = require("jsonwebtoken");
 const zod = require("zod");
-import { JWT_SECRET } from "../config";
-import { User } from "../db";
+const { JWT_SECRET } = require("../config");
+const { User } = require("../db");
 
 const signupSchema = zod.object({
   username: zod.string().email(),
@@ -19,27 +19,69 @@ router.post("/signup", async (req, res) => {
     });
   }
 
-  const user = User.findOne({
+  const existingUser = await User.findOne({
     username: body.username,
   });
-  if (user._id) {
-    return res.json({
+  if (existingUser) {
+    return res.status(411).json({
       message: "Email already taken / Incorrect inputs",
     });
   }
-  const dbUser = await User.create(body);
+  const user = await User.create({
+    username: body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+  });
+
+  const userId = user._id;
+
   const token = jwt.sign(
     {
-      userId: dbUser._id,
+      userId,
     },
     JWT_SECRET
   );
-  res.jsom({
+  res.json({
     message: "User created successfully",
     token: token,
   });
 });
 
-const router = express.Router();
+const signinSchema = zod.object({
+  username: zod.string().email(),
+  password: zod.string(),
+});
 
-module.exports = router;
+router.post("/signin", async (req, res) => {
+  const { success } = signinSchema.safeParse(req.body);
+
+  if (!success) {
+    return res.status(411).json({
+      message: "Incorrect Inputs",
+    });
+  }
+  const user = await User.findOne({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  if (user) {
+    const token = jwt.sign(
+      {
+        userId: user._id,
+      },
+      JWT_SECRET
+    );
+
+    res.json({
+      token: token,
+    });
+
+    return;
+  }
+
+  res.status(411).json({
+    message: "Error Logging In",
+  });
+});

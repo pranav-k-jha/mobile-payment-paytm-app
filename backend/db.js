@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-const { string } = require("zod");
-const app = require("express");
 
-mongoose.connect("mongodb://127.0.0.0.1:27017/paytm");
+mongoose.connect("mongodb://localhost:27017/paytm");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -45,10 +43,11 @@ const accountSchema = new mongoose.Schema({
   },
 });
 const Account = mongoose.model("Account", accountSchema);
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = {
-  User, Account
+  User,
+  Account,
 };
 
-app.listen((3000, () => console.log("Server started on port 3000")));
+// app.listen((3000), () => console.log("Server started on port 3000"));

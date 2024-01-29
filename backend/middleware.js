@@ -1,5 +1,4 @@
-import React from "react";
-import { JWT_SECRET } from "./config";
+const { JWT_SECRET } = require("./config");
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
@@ -19,4 +18,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-export default authMiddleware;
+module.exports = {
+  authMiddleware,
+};
